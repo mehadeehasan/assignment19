@@ -88,9 +88,13 @@ export async function DELETE(req, res) {
 try {
     const prisma = new PrismaClient();
     let reqBody = await req.json();
-    let result = await prisma.order.delete({
-      where: reqBody,
-    });
+   
+   const deleteOrder=prisma.Comment.delete({
+            where:{id:1}
+        })
+  
+    const result=await prisma.$transaction([deleteOrder])
+  
     return NextResponse.json({ status: "Success", result: result });
   } catch (err) {
     return NextResponse.json({ status: "Fail", result: err.toString() });
