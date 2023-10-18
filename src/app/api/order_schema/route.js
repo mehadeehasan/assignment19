@@ -11,7 +11,31 @@ export async function POST(req, res) {
       const prisma = new PrismaClient();
       let reqBody  = await req.json();
       let result   = await prisma.order.create({ data: reqBody });
+      
+const aggregations = await prisma.order.aggregate({
+      _avg: {
+        grandTotal: true,
+      },
+      _count: {
+        grandTotal: true,
+      },
+      _max: {
+        grandTotal: true,
+      },
+      _sum: {
+        grandTotal: true,
+      },
+      orderBy: {
+        grandTotal: "asc",
+      },
+      take: 10,
+    });
 
+    console.log("Average grand total:" + aggregations._avg.grandTotal);
+    console.log("Total count of grand total:" + aggregations._count.grandTotal);
+    console.log("Maximum value of grand total:" + aggregations._max.grandTotal);
+    console.log("Minimum value of grand total:" + aggregations._sum.grandTotal);
+      
       return NextResponse.json({ status: "Success", result: result });
     } catch (err) {
       return NextResponse.json({ status: "Fail", result: err.toString() });
